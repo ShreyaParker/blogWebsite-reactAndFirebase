@@ -12,8 +12,8 @@ function Home({ isAuth }) {
             setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
         };
 
-        getPosts();
-    });
+        getPosts().then(r => r.data);
+    }, [postsCollectionRef]);
 
     const deletePost = async (id) => {
         const postDoc = doc(db, "posts", id);
@@ -29,16 +29,15 @@ function Home({ isAuth }) {
                                 <h1> {post.title}</h1>
                             </div>
                             <div className="deletePost">
-                                {isAuth && post.author.id === auth.currentUser.uid && (
+                                {isAuth && post.author.id === auth.currentUser.uid &&
                                     <button
-                                        onClick={() => {
-                                            deletePost(post.id);
-                                        }}
+                                        onClick={() =>
+                                            deletePost(post.id)
+                                        }
                                     >
-                                        {" "}
                                         &#128465;
                                     </button>
-                                )}
+                                }
                             </div>
                         </div>
                         <div className="postTextContainer"> {post.postText} </div>
