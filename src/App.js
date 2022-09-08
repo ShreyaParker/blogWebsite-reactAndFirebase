@@ -1,37 +1,40 @@
 import "./App.css"
 import {BrowserRouter as Router,Routes , Route ,Link} from "react-router-dom";
 import Home from "./pages/Home";
+import "bootstrap/dist/css/bootstrap.css";
+
 import CreatePost from "./pages/CreatePost";
 import Login from "./pages/Login";
-import {useState} from "react";
 import {signOut} from "firebase/auth"
 import {auth} from "./firebase-config";
+import {Button, Nav} from "react-bootstrap";
+import {useAuthState} from "react-firebase-hooks/auth";
 
 const App = () => {
-    const [isAuth,setIsAuth] =useState(localStorage.getItem("isAuth"));
+    const [user] = useAuthState(auth)
 
-    const signUserOut =()=>{
-        signOut(auth).then(()=>{
-            localStorage.clear()
-            setIsAuth(false)
-            window.location.pathname="/login"
-        })
+    const signUserOut=async ()=>{
+        await signOut(auth)
     }
     return (
         <Router>
-            <nav>
+            <Nav className="d-flex justify-content-center bg-black ">
                 <Link to="/">Home</Link>
-                {!isAuth ? <Link to="/login">Login</Link> : (
+                {!user ? <Link to="/login">Login</Link> : (
                     <>
                         <Link to="/createpost">Create Post</Link>
-                        <button onClick={signUserOut}>Log Out</button>
+                        <Button variant="outline-danger" onClick={signUserOut}>Log Out</Button>
+                        <Button variant="outline-primary">
+                            {user?.displayName}
+                            <span className="visually-hidden">unread messages</span>
+                        </Button>
                     </>
                     )}
-            </nav>
+            </Nav>
             <Routes>
-                <Route path ="/" element={<Home isAuth={isAuth}/>} />
-                <Route path ="/createpost" element={<CreatePost isAuth={isAuth}/>} />
-                <Route path ="/login" element={<Login setIsAuth={setIsAuth}/>} />
+                <Route path ="/" element={<Home user={user}/>} />
+                <Route path ="/createpost" element={<CreatePost user={user}/>} />
+                <Route path ="/login" element={<Login/>} />
 
             </Routes>
         </Router>

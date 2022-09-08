@@ -2,24 +2,23 @@ import React from 'react';
 import {auth,provider} from "../firebase-config";
 import {signInWithPopup} from 'firebase/auth'
 import {useNavigate} from "react-router-dom";
+import {Button} from "react-bootstrap";
 
-const Login = ({setIsAuth}) => {
+const Login = () => {
     let navigate=useNavigate()
-    const signInWithGoogle = () => {
-        signInWithPopup(auth,provider).then((result)=>{
-            localStorage.setItem("isAuth",true)
-            setIsAuth(true)
-            navigate("/")
-        })
+    const signInWithGoogle = async() => {
+        await signInWithPopup(auth,provider)
+        navigate("/")
     }
     return (
         <div className="loginPage">
             <p>sign In with Google to Continue</p>
-            <button className="login-with-google-btn"
+            <Button
+                   variant={"outline-primary"}
                     onClick={signInWithGoogle}
             >
                 Sign In With Google
-            </button>
+            </Button>
 
         </div>
     );
